@@ -1,0 +1,266 @@
+
+package com.mycompany.os_project;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author bisho
+ */
+public class Working extends javax.swing.JFrame {
+
+    /**
+     * Creates new form Working
+     */
+    public static String txt = "" ; 
+    public static String txt1 = "" ;
+    
+    static String user = "root";
+    static String pass = "";
+    static Connection con;
+    static Statement ss;
+    static String query = "";
+    
+    
+    public Working() {
+        initComponents();
+        int noOfBarbers=2, customerId=1, noOfCustomers=5, noOfChairs = 10;
+        noOfBarbers   = Integer.parseInt(Home.NBarbers ) ;
+        noOfCustomers = Integer.parseInt(Home.NCustomers) ;
+//        noOfChairs    = Integer.parseInt(Home.NChairs);
+        ExecutorService exec = Executors.newFixedThreadPool(100);		//initializing with 12 threads as multiple of cores in the CPU, here 6
+    	Bshop shop = new Bshop(noOfBarbers, noOfChairs);				//initializing the barber shop with the number of barbers
+    	Random r = new Random();
+        txt += "\nBank  opened with " ;
+        txt += noOfBarbers ;
+        txt += " employee(s)\n";
+        long startTime  = System.currentTimeMillis();					//start time of program
+        for(int i=1; i<=noOfBarbers;i++) {								//generating the specified number of threads for barber
+        	
+        	employee barber = new employee(shop, i);	
+        	Thread thbarber = new Thread(barber);
+            exec.execute(thbarber);
+        }
+        for(int i=0;i<noOfCustomers;i++) {								//customer generator; generating customer threads
+        
+            Customer customer = new Customer(shop);
+            customer.setInTime(new Date());
+            Thread thcustomer = new Thread(customer);
+            customer.setcustomerId(customerId++);
+            exec.execute(thcustomer);
+            
+            try {
+            	
+            	double val = r.nextGaussian() * 2000 + 2000;			//'r':object of Random class, nextGaussian() generates a number with mean 2000 and	
+            	int millisDelay = Math.abs((int) Math.round(val));		//standard deviation as 2000, thus customers arrive at mean of 2000 milliseconds
+            	Thread.sleep(millisDelay);								//and standard deviation of 2000 milliseconds
+            }
+            catch(InterruptedException iex) {
+            
+                iex.printStackTrace();
+            }
+            
+        }
+        
+        exec.shutdown();												//shuts down the executor service and frees all the resources
+        try {
+            exec.awaitTermination(12, SECONDS);								//waits for 12 seconds until all the threads finish their execution
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Working.class.getName()).log(Level.SEVERE, null, ex);
+        }
+ 
+        long elapsedTime = System.currentTimeMillis() - startTime;   
+        
+        System.out.println("\nBank closed");
+        
+        System.out.println("\nTotal time elapsed in seconds"
+        		+ " for serving "+noOfCustomers+" customers by "
+        		+noOfBarbers+" employees with "+noOfChairs+
+        		" chairs in the waiting room is: "
+        		+TimeUnit.MILLISECONDS
+        	    .toSeconds(elapsedTime));
+        System.out.println("\nTotal customers: "+noOfCustomers+
+        		"\nTotal customers served: "+shop.getTotalHairCuts()
+        		+"\nTotal customers lost: "+shop.getCustomerLost());
+
+        
+                System.out.println("\nTotal Cost: "+shop.getTotalHairCuts() +
+        		"\nPredected Cost: "+noOfCustomers);
+                
+                
+        txt += "\nBaank closed" + "\nTotal time elapsed in seconds"
+                + " for serving " + noOfCustomers + " customers by "
+                + noOfBarbers + " employees with " + noOfChairs
+                + " chairs in the waiting room is: "
+                + TimeUnit.MILLISECONDS
+                        .toSeconds(elapsedTime) ;
+                txt1 = "\nTotal customers: " + noOfCustomers
+                +"\nTotal customers served: " + shop.getTotalHairCuts()
+                + "\nTotal customers lost: " + shop.getCustomerLost() ;
+                
+        jTextArea1.setText(txt);
+           
+        
+        
+        
+                
+        
+        
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel1 = new javax.swing.JPanel();
+        jButton6 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Work in Progress");
+        setResizable(false);
+
+        jPanel1.setBackground(new java.awt.Color(0, 0, 0));
+
+        jButton6.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jButton6.setText("Back");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setBackground(new java.awt.Color(255, 255, 255));
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setAutoscrolls(false);
+        jTextArea1.setBorder(null);
+        jTextArea1.setDisabledTextColor(new java.awt.Color(255, 255, 255));
+        jTextArea1.setRequestFocusEnabled(false);
+        jTextArea1.setVerifyInputWhenFocusTarget(false);
+        jScrollPane1.setViewportView(jTextArea1);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(41, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(9, 9, 9))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // TODO add your handling code here:
+        Home h = new Home();
+        this.setVisible(false);
+        h.setVisible(true);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Working.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Working.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Working.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Working.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Working().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea jTextArea1;
+    // End of variables declaration//GEN-END:variables
+}
